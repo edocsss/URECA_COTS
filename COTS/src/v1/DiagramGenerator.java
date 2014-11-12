@@ -2,7 +2,6 @@ package v1;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 
 public class DiagramGenerator 
 {
@@ -22,18 +21,17 @@ public class DiagramGenerator
 		this.lineDrawer = new DrawLine();
 	}
 	
-	public void constructLines (ArrayList<OperationGroup> operationGroups)
+	public void constructLines ()
 	{
 		// Add the Lines2D.Double object directly to the DrawLine object
-		OperationGroup og = operationGroups.get(operationGroups.size() - 1);
-		double[] pointerMovement = new double[] {0.0, 0.0}; // Keep track how far the coordPointer has moved
+		OperationGroup og = OperationGroupManager.getBiggestOperationGroup();
 		if (og.getOperator().equalsIgnoreCase("||"))
 		{
-			og.generateDiagram(this.lineDrawer, operationGroups, this.coordPointer, true, false, 1, false);
+			og.generateDiagram(this.lineDrawer, this.coordPointer, true, false, 1, false);
 		}
 		else if (og.getOperator().equalsIgnoreCase("->"))
 		{
-			og.generateDiagram(this.lineDrawer, operationGroups, this.coordPointer, false , false, 1, false);
+			og.generateDiagram(this.lineDrawer, this.coordPointer, false , false, 1, false);
 		}
 	}
 	

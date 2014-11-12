@@ -6,13 +6,11 @@ import java.util.Stack;
 public class Parser 
 {
 	private String expression;
-	private ArrayList<OperationGroup> processedExpression;
 	private int idCounter;
 	
 	public Parser (String expression)
 	{
 		this.expression = expression;
-		this.processedExpression = new ArrayList<OperationGroup> ();
 		this.idCounter = -1;
 	}
 	
@@ -36,6 +34,9 @@ public class Parser
 		
 		// Index of character in the Expression string
 		int i = 0;
+		
+		// The result
+		ArrayList<OperationGroup> processedExpression = new ArrayList<OperationGroup> ();
 		
 		// As long as the bracketStack is not empty (meaning that not all operations inside the brackets have been touched, 
 		// continue parsing
@@ -148,7 +149,7 @@ public class Parser
 					
 					// Add a new OperationGroup to the ArrayList
 					op = new OperationGroup(Integer.parseInt(firstOperand), Integer.parseInt(secondOperand), this.idCounter--, operator);
-					this.processedExpression.add(op);
+					processedExpression.add(op);
 					
 					// Push back the operation group which consists of 2 operands and 1 operator
 					// Purpose: so that this group can be later grouped with other operand
@@ -197,15 +198,13 @@ public class Parser
 		}
 		
 		*/
+		
+		// Set the Operation Groups into the manager
+		OperationGroupManager.setOperationGroups(processedExpression);
 	}
 	
 	public String getExpression ()
 	{
 		return this.expression;
-	}
-	
-	public ArrayList<OperationGroup> getParsedExpression ()
-	{
-		return this.processedExpression;
 	}
 }

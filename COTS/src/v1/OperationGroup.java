@@ -2,8 +2,6 @@ package v1;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Line2D.Double;
-import java.util.ArrayList;
 
 public class OperationGroup 
 {
@@ -83,8 +81,7 @@ public class OperationGroup
 	 * @param n					An integer indicating how many lines needed to be drawn for the other site
 	 * @param north				Where should the line is drawn (up or right -> indicating whether it is site 1 or 2 actually)
 	 */
-	public void generateDiagram (DrawLine d, ArrayList<OperationGroup> operationGroups, Point2D.Double coordPointer, 
-								 boolean concurrency, boolean prevConcurrent, int n, boolean north)
+	public void generateDiagram (DrawLine d, Point2D.Double coordPointer, boolean concurrency, boolean prevConcurrent, int n, boolean north)
 	{
 		// Temporary variable declaration
 		OperationGroup og;
@@ -102,10 +99,10 @@ public class OperationGroup
 			// Check whether second operand is another OperationGroup
 			if (this.secondOperand < 0)
 			{
-				og = OperationGroupManager.getOperationGroupById(operationGroups, this.secondOperand);
+				og = OperationGroupManager.getOperationGroupById(this.secondOperand);
 				
 				// Get the number of lines need to be drawn in Site 1
-				numLines = og.getDepth(operationGroups, 0);
+				numLines = og.getDepth();
 			}
 			
 			// If the first operand is also a OperationGroup
@@ -116,7 +113,7 @@ public class OperationGroup
 				traceBackY = coordPointer.y;
 				
 				// Retrieve the object
-				og = OperationGroupManager.getOperationGroupById(operationGroups, this.firstOperand);
+				og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 				
 				// Recursive call according to the type of operator
 				// It is impossible to get "||" as this is a 2D COTS
@@ -124,11 +121,11 @@ public class OperationGroup
 				{
 					// prevConcurrency = true because the OperationGroup calls generateDiagram() from a OperationGroup with concurrent operator
 					// north = false because it is still the first operand, it means it works on the first site (draw to the right)
-					og.generateDiagram(d, operationGroups, coordPointer, true, true, numLines, false);
+					og.generateDiagram(d, coordPointer, true, true, numLines, false);
 				}
 				else if (og.getOperator().equalsIgnoreCase("->"))
 				{
-					og.generateDiagram(d, operationGroups, coordPointer, false, true, numLines, false);
+					og.generateDiagram(d, coordPointer, false, true, numLines, false);
 				}
 				
 				// Move back the pointer into the place where the interjunction of the two sites before the concurrency happened
@@ -188,24 +185,24 @@ public class OperationGroup
 			// Update the number of lines from SITE 1 which needs to be drawn while drawing the lines for SITE 2
 			if (this.firstOperand < 0)
 			{
-				og = OperationGroupManager.getOperationGroupById(operationGroups, this.firstOperand);
-				numLines = og.getDepth(operationGroups, 0);
+				og = OperationGroupManager.getOperationGroupById(this.firstOperand);
+				numLines = og.getDepth();
 			}
 			
 			// If the second operand is also a OperationGroup
 			if (this.secondOperand < 0)
 			{
-				og = OperationGroupManager.getOperationGroupById(operationGroups, this.secondOperand);
+				og = OperationGroupManager.getOperationGroupById(this.secondOperand);
 				
 				if (og.getOperator().equalsIgnoreCase("||"))
 				{
 					// prevConcurrency = true because the OperationGroup calls generateDiagram() from a OperationGroup with concurrent operator
 					// north = true because it is now the second operand, it means it works on the second site (draw upwards)
-					og.generateDiagram(d, operationGroups, coordPointer, true, true, numLines, true);
+					og.generateDiagram(d, coordPointer, true, true, numLines, true);
 				}
 				else if (og.getOperator().equalsIgnoreCase("->"))
 				{
-					og.generateDiagram(d, operationGroups, coordPointer, false, true, numLines, true);
+					og.generateDiagram(d, coordPointer, false, true, numLines, true);
 				}
 			}
 			// When the second operand is now only a SINGLE operand
@@ -259,16 +256,16 @@ public class OperationGroup
 				// Recursive call -> to get the smallest operand
 				if (this.firstOperand < 0)
 				{
-					og = OperationGroupManager.getOperationGroupById(operationGroups, this.firstOperand);
+					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					
 					// Impossible to get the || as this is a 2D
 					if (og.getOperator().equalsIgnoreCase("||"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, true, prevConcurrent, n, north);
+						og.generateDiagram(d, coordPointer, true, prevConcurrent, n, north);
 					}
 					else if (og.getOperator().equalsIgnoreCase("->"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, false, prevConcurrent, n, north);
+						og.generateDiagram(d, coordPointer, false, prevConcurrent, n, north);
 					}
 				}
 				// If it is already the smallest operand, draw the line 
@@ -338,7 +335,7 @@ public class OperationGroup
 				// If the second operand is a OperationGroup
 				if (this.secondOperand < 0)
 				{
-					og = OperationGroupManager.getOperationGroupById(operationGroups, this.firstOperand);
+					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					
 					// In the case of SITE 2 causal relation with previous concurrency = true
 					// The checking is done as follows
@@ -354,11 +351,11 @@ public class OperationGroup
 					
 					if (og.getOperator().equalsIgnoreCase("||"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, true, prevConcurrent, n, north);
+						og.generateDiagram(d, coordPointer, true, prevConcurrent, n, north);
 					}
 					else if (og.getOperator().equalsIgnoreCase("->"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, false, prevConcurrent, n, north);
+						og.generateDiagram(d, coordPointer, false, prevConcurrent, n, north);
 					}
 				}
 				else if (this.secondOperand > 0)
@@ -429,14 +426,14 @@ public class OperationGroup
 				// Getting the smallest operand
 				if (this.firstOperand < 0)
 				{
-					og = OperationGroupManager.getOperationGroupById(operationGroups, this.firstOperand);
+					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					if (og.getOperator().equalsIgnoreCase("||"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, true, prevConcurrent, n, north);
+						og.generateDiagram(d, coordPointer, true, prevConcurrent, n, north);
 					}
 					else if (og.getOperator().equalsIgnoreCase("->"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, false, prevConcurrent, n, north);
+						og.generateDiagram(d, coordPointer, false, prevConcurrent, n, north);
 					}
 				}
 				// If it is the smallest operand, then start drawing ONLY THIS SITE!! (because there is no concurrency)
@@ -466,14 +463,14 @@ public class OperationGroup
 				// Checking for second operand
 				if (this.secondOperand < 0)
 				{
-					og = OperationGroupManager.getOperationGroupById(operationGroups, this.secondOperand);
+					og = OperationGroupManager.getOperationGroupById(this.secondOperand);
 					if (og.getOperator().equalsIgnoreCase("||"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, true, true, n, north);
+						og.generateDiagram(d, coordPointer, true, true, n, north);
 					}
 					else if (og.getOperator().equalsIgnoreCase("->"))
 					{
-						og.generateDiagram(d, operationGroups, coordPointer, false, true, n, north);
+						og.generateDiagram(d, coordPointer, false, true, n, north);
 					}
 				}
 				// Drawing the second operand
@@ -509,29 +506,27 @@ public class OperationGroup
 	 * @param n					counter -> needed as an initialize value in a recursive file (no pointer like in C)
 	 * @return					the number of operations inside this OperationGroup
 	 */
-	public int getDepth (ArrayList<OperationGroup> operationGroups, int n)
+	public int getDepth ()
 	{
 		int firstDepth = -1, secondDepth = -1;
 		OperationGroup og;
 		
 		if (this.firstOperand > 0 && this.secondOperand > 0)
 		{
-			n += 2;
-			return n;
+			return 2;
 		}
 		else
 		{
-			n++;
 			if (this.firstOperand < 0)
 			{
-				og = OperationGroupManager.getOperationGroupById(operationGroups, this.firstOperand);
-				firstDepth = og.getDepth(operationGroups, n);
+				og = OperationGroupManager.getOperationGroupById(this.firstOperand);
+				firstDepth = 1 + og.getDepth();
 			}
 			
 			if (this.secondOperand < 0)
 			{
-				og = OperationGroupManager.getOperationGroupById(operationGroups, this.secondOperand);
-				secondDepth = og.getDepth(operationGroups, n);
+				og = OperationGroupManager.getOperationGroupById(this.secondOperand);
+				secondDepth = 1 + og.getDepth();
 			}
 			
 			// As there are two SITE, get the most number of operations

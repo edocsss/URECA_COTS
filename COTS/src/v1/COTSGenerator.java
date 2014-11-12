@@ -30,7 +30,7 @@ public class COTSGenerator
 		parser.parseExpression();
 		
 		DiagramGenerator diagramGenerator = new DiagramGenerator();
-		diagramGenerator.constructLines(parser.getParsedExpression());
+		diagramGenerator.constructLines();
 		
 		diagramGenerator.printOutLine();
 		diagramGenerator.generateDiagram();
