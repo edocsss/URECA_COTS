@@ -66,7 +66,7 @@ public class OperationGroup
 	 * </p>
 	 * 
 	 * <p>
-	 * <b>IMPORTANT NOTE!!<b>
+	 * <b>IMPORTANT NOTE!!</b>
 	 * The idea of recursively calling this method is to get the smallest operand possible, which is a single operand!!
 	 * After this SINGLE OPERAND is found, start drawing the lines.
 	 * </p>
