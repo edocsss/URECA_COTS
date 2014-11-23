@@ -20,7 +20,9 @@ public class COTSGenerator
 		System.out.println("Please note that current version of COTS Diagram Generator has a format for a given expression:");
 		System.out.println("1. For each 2 operands, it has to be bounded by opening and closing parenthesis");
 		System.out.println("2. Do not put any whitespace in between");
-		System.out.println("Example: ((1->2)||3)");
+		System.out.println("Example:");
+		System.out.println("((1->2)||3)");
+		System.out.println("((1->2)||(3->4))");
 		System.out.println("");
 		
 		System.out.print("Enter an expression: ");

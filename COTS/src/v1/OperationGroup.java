@@ -5,14 +5,43 @@ import java.awt.geom.Point2D;
 
 public class OperationGroup 
 {
-	/*
+	/**
 	 * Assumption: the first operand will always be drawn in the first dimension (EAST) and the second operand
 	 * 			   in the second dimension (NORTH)
 	 */
+	
+	/**
+	 * The integer stored here is the ID of a single operand (if it is a positive integer)
+	 * or an OperationGroup object (if it is a negative integer)
+	 * 
+	 * Positive: SINGLE operand
+	 * Negative: Another OperationGroup object (composed of many other operands)
+	 */
 	private int firstOperand;
 	private int secondOperand;
+	
+	/**
+	 * The ID of this OperationGroup
+	 * To quickly fetch an object from all OperationGroup objects
+	 */
 	private int id;
+	
+	/**
+	 * The operation type
+	 */
 	private String operator;
+	
+	/**
+	 * Whether the current processed OperationGroup is a concurrent operation -> based on the operator
+	 */
+	private boolean concurrency;
+	
+	/**
+	 *	Whether the current OperationGroup is CALLED from a concurrent OperationGroup object
+	 * 	If we know that the current OperationGroup is from a CONCURRENT OperationGroup, we can
+	 *	draw the other site part together with this site 
+	 */
+	private boolean prevConcurrent;
 	
 	public OperationGroup (int firstOperand, int secondOperand, int id, String operator)
 	{
@@ -23,6 +52,9 @@ public class OperationGroup
 	}
 	
 	/**
+	 * This method is the main method which decides where the line should be drawn, how long, the direction, etc.
+	 * It uses a recursive call to analyze each single operand (like a DFS where one tree node is one operand)
+	 * 
 	 * How it works:
 	 * <p>For every call, it checks whether it is a concurrent operation. If it is, then the process of drawing can be done
 	 * as follows:
@@ -72,16 +104,11 @@ public class OperationGroup
 	 * </p>
 	 * 
 	 * @param d					A DrawLine object, to add the lines
-	 * @param operationGroups	All OperationGroup objects -> to get an object based on the ID (to call a recursive method)
 	 * @param coordPointer		The pointer in the coordinate system
-	 * @param concurrency		Whether the current processed OperationGroup is a concurrent operation
-	 * @param prevConcurrent	Whether the current OperationGroup is CALLED from a concurrent OperationGroup object
-	 * 							If we know that the current OperationGroup is from a CONCURRENT OperationGroup, we can
-	 * 							draw the other site part together with this site
 	 * @param n					An integer indicating how many lines needed to be drawn for the other site
-	 * @param north				Where should the line is drawn (up or right -> indicating whether it is site 1 or 2 actually)
+	 * @param siteTwo			The direction the line is drawn (up or right)
 	 */
-	public void generateDiagram (DrawLine d, Point2D.Double coordPointer, boolean concurrency, boolean prevConcurrent, int n, boolean north)
+	public void generateDiagram (DrawLine d, Point2D.Double coordPointer, int n, boolean siteTwo)
 	{
 		// Temporary variable declaration
 		OperationGroup og;
@@ -94,7 +121,7 @@ public class OperationGroup
 		double traceBackX, traceBackY;
 				
 		// If it is a concurrent operation
-		if (concurrency)
+		if (this.concurrency)
 		{
 			// Check whether second operand is another OperationGroup
 			if (this.secondOperand < 0)
@@ -114,19 +141,8 @@ public class OperationGroup
 				
 				// Retrieve the object
 				og = OperationGroupManager.getOperationGroupById(this.firstOperand);
-				
-				// Recursive call according to the type of operator
-				// It is impossible to get "||" as this is a 2D COTS
-				if (og.getOperator().equalsIgnoreCase("||"))
-				{
-					// prevConcurrency = true because the OperationGroup calls generateDiagram() from a OperationGroup with concurrent operator
-					// north = false because it is still the first operand, it means it works on the first site (draw to the right)
-					og.generateDiagram(d, coordPointer, true, true, numLines, false);
-				}
-				else if (og.getOperator().equalsIgnoreCase("->"))
-				{
-					og.generateDiagram(d, coordPointer, false, true, numLines, false);
-				}
+				og.setPrevConcurrency(true);
+				og.generateDiagram(d, coordPointer, numLines, false);
 				
 				// Move back the pointer into the place where the interjunction of the two sites before the concurrency happened
 				coordPointer.setLocation(traceBackX, traceBackY);
@@ -193,17 +209,8 @@ public class OperationGroup
 			if (this.secondOperand < 0)
 			{
 				og = OperationGroupManager.getOperationGroupById(this.secondOperand);
-				
-				if (og.getOperator().equalsIgnoreCase("||"))
-				{
-					// prevConcurrency = true because the OperationGroup calls generateDiagram() from a OperationGroup with concurrent operator
-					// north = true because it is now the second operand, it means it works on the second site (draw upwards)
-					og.generateDiagram(d, coordPointer, true, true, numLines, true);
-				}
-				else if (og.getOperator().equalsIgnoreCase("->"))
-				{
-					og.generateDiagram(d, coordPointer, false, true, numLines, true);
-				}
+				og.setPrevConcurrency(true);
+				og.generateDiagram(d, coordPointer, numLines, true);
 			}
 			// When the second operand is now only a SINGLE operand
 			else if (this.secondOperand > 0)
@@ -251,22 +258,14 @@ public class OperationGroup
 		{
 			// In case it is a causal relation, but it is called from a concurrent GroupOperation previously
 			// It means that for each line drawn, it must draw the other site's lines
-			if (prevConcurrent)
+			if (this.prevConcurrent)
 			{
 				// Recursive call -> to get the smallest operand
 				if (this.firstOperand < 0)
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
-					
-					// Impossible to get the || as this is a 2D
-					if (og.getOperator().equalsIgnoreCase("||"))
-					{
-						og.generateDiagram(d, coordPointer, true, prevConcurrent, n, north);
-					}
-					else if (og.getOperator().equalsIgnoreCase("->"))
-					{
-						og.generateDiagram(d, coordPointer, false, prevConcurrent, n, north);
-					}
+					og.setPrevConcurrency(this.prevConcurrent);
+					og.generateDiagram(d, coordPointer, n, siteTwo);
 				}
 				// If it is already the smallest operand, draw the line 
 				else if (this.firstOperand > 0)
@@ -275,7 +274,7 @@ public class OperationGroup
 					// We must determine which direction the line will be drawn
 					
 					// If drawing for SITE 2
-					if (north)
+					if (siteTwo)
 					{
 						offsetX = 0.0;
 						offsetY = DiagramGenerator.OFFSET_Y;
@@ -299,7 +298,7 @@ public class OperationGroup
 					
 					// Now, preparation for THE OTHER SITE's line drawing (it must be in the reverse direction than the current SITE)
 					// That's why below is the swapping of the offset
-					if (north)
+					if (siteTwo)
 					{
 						offsetX = DiagramGenerator.OFFSET_X;
 						offsetY = 0.0;
@@ -325,49 +324,39 @@ public class OperationGroup
 					
 					// Trace back the coordPointer to the original place if and only if it is in the SITE 1
 					// This goes back to the place before the line from SITE 2 is drawn when drawing SITE 1's lines
-					if (!north)
+					if (!siteTwo)
 					{
 						coordPointer.setLocation(coordPointer.x, coordPointer.y - pointerMovement[1]);
 						pointerMovement[1] = 0.0;
 					}
 				}
 				
+				// In the case of SITE 2 causal relation with previous concurrency = true
+				// The checking is done as follows
+				// 1. After the first operand is done, the last pointer is still on the tip of the lines created for SITE 1 (the transformed line)
+				// 2. Therefore, we need to trace back to the point where the line should continue for SITE 2
+				// 3. THIS ONLY WORKS WHEN DRAWING UPWARDS!!
+				if (siteTwo)
+				{
+					// n * OFFSET_X means that there are n lines to be drawn from the other site, and per line has the width
+					// of OFFSET_X
+					coordPointer.setLocation(coordPointer.x - n * DiagramGenerator.OFFSET_X, coordPointer.y);
+				}
+				
 				// If the second operand is a OperationGroup
 				if (this.secondOperand < 0)
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
-					
-					// In the case of SITE 2 causal relation with previous concurrency = true
-					// The checking is done as follows
-					// 1. After the first operand is done, the last pointer is still on the tip of the lines created for SITE 1 (the transformed line)
-					// 2. Therefore, we need to trace back to the point where the line should continue for SITE 2
-					// 3. THIS ONLY WORKS WHEN DRAWING UPWARDS!!
-					if (north)
-					{
-						// n * OFFSET_X means that there are n lines to be drawn from the other site, and per line has the width
-						// of OFFSET_X
-						coordPointer.setLocation(coordPointer.x - n * DiagramGenerator.OFFSET_X, coordPointer.y);
-					}
-					
-					if (og.getOperator().equalsIgnoreCase("||"))
-					{
-						og.generateDiagram(d, coordPointer, true, prevConcurrent, n, north);
-					}
-					else if (og.getOperator().equalsIgnoreCase("->"))
-					{
-						og.generateDiagram(d, coordPointer, false, prevConcurrent, n, north);
-					}
+					og.setPrevConcurrency(this.prevConcurrent);
+					og.generateDiagram(d, coordPointer, n, siteTwo);
 				}
 				else if (this.secondOperand > 0)
 				{
 					// Setting up the direction of drawing
-					if (north)
+					if (siteTwo)
 					{
 						offsetX = 0.0;
 						offsetY = DiagramGenerator.OFFSET_Y;
-						
-						// Same reason as above, however this one is a single operand
-						coordPointer.setLocation(coordPointer.x - n * DiagramGenerator.OFFSET_X, coordPointer.y);
 					}
 					else
 					{
@@ -385,7 +374,7 @@ public class OperationGroup
 					pointerMovement[1] += offsetY;
 					
 					// Setting up for drawing the other SITE's lines
-					if (north)
+					if (siteTwo)
 					{
 						offsetX = DiagramGenerator.OFFSET_X;
 						offsetY = 0.0;
@@ -413,7 +402,7 @@ public class OperationGroup
 					// LINES (MOVE ALONG AXIS Y ONLY) because the drawing of SITE 1's original line is to the right
 					// After drawing the other site's lines, the point is not in the main line where the original line is being
 					// drawn
-					if (!north)
+					if (!siteTwo)
 					{
 						coordPointer.setLocation(coordPointer.x, coordPointer.y - pointerMovement[1]);
 						pointerMovement[1] = 0.0;
@@ -427,20 +416,14 @@ public class OperationGroup
 				if (this.firstOperand < 0)
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
-					if (og.getOperator().equalsIgnoreCase("||"))
-					{
-						og.generateDiagram(d, coordPointer, true, prevConcurrent, n, north);
-					}
-					else if (og.getOperator().equalsIgnoreCase("->"))
-					{
-						og.generateDiagram(d, coordPointer, false, prevConcurrent, n, north);
-					}
+					og.setPrevConcurrency(this.prevConcurrent);
+					og.generateDiagram(d, coordPointer, n, siteTwo);
 				}
 				// If it is the smallest operand, then start drawing ONLY THIS SITE!! (because there is no concurrency)
 				else if (this.firstOperand > 0)
 				{
 					// Setting up the direction of drawing
-					if (north)
+					if (siteTwo)
 					{
 						offsetX = 0.0;
 						offsetY = DiagramGenerator.OFFSET_Y;
@@ -464,19 +447,14 @@ public class OperationGroup
 				if (this.secondOperand < 0)
 				{
 					og = OperationGroupManager.getOperationGroupById(this.secondOperand);
-					if (og.getOperator().equalsIgnoreCase("||"))
-					{
-						og.generateDiagram(d, coordPointer, true, true, n, north);
-					}
-					else if (og.getOperator().equalsIgnoreCase("->"))
-					{
-						og.generateDiagram(d, coordPointer, false, true, n, north);
-					}
+					og.setPrevConcurrency(this.prevConcurrent);
+					og.generateDiagram(d, coordPointer, n, siteTwo);
 				}
+					
 				// Drawing the second operand
 				else if (this.secondOperand > 0)
 				{
-					if (north)
+					if (siteTwo)
 					{
 						offsetX = 0.0;
 						offsetY = DiagramGenerator.OFFSET_Y;
@@ -552,5 +530,15 @@ public class OperationGroup
 	public String getOperator ()
 	{
 		return this.operator;
+	}
+	
+	public void setConcurrency (boolean concurrency)
+	{
+		this.concurrency = concurrency;
+	}
+	
+	public void setPrevConcurrency (boolean prevConcurrent)
+	{
+		this.prevConcurrent = prevConcurrent;
 	}
 }

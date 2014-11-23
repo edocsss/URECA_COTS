@@ -149,6 +149,15 @@ public class Parser
 					
 					// Add a new OperationGroup to the ArrayList
 					op = new OperationGroup(Integer.parseInt(firstOperand), Integer.parseInt(secondOperand), this.idCounter--, operator);
+					if (operator.equalsIgnoreCase("||"))
+					{
+						op.setConcurrency(true);
+					}
+					else if (operator.equalsIgnoreCase("->"))
+					{
+						op.setConcurrency(false);
+					}
+					
 					processedExpression.add(op);
 					
 					// Push back the operation group which consists of 2 operands and 1 operator
