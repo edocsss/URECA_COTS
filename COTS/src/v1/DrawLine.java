@@ -40,6 +40,27 @@ public class DrawLine extends JFrame {
 			//Draw all lines
 			for (Line2D.Double line: lines) {
 				g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
+				
+				// draw arrow
+				if (line.getX1() == line.getX2()) {
+					// vertical line
+					if (line.getY2() > line.getY1()) {
+						g.drawLine((int) line.getX1() - 5, (int) line.getY1() + 7, (int) line.getX2(), (int) line.getY1());
+						g.drawLine((int) line.getX1() + 5, (int) line.getY1() + 7, (int) line.getX2(), (int) line.getY1());
+					} else {
+						g.drawLine((int) line.getX1() - 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
+						g.drawLine((int) line.getX1() + 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
+					}
+				} else if (line.getY1() == line.getY2()){
+					// horizontal line
+					if (line.getX2() > line.getX1()) {
+						g.drawLine((int) line.getX2() - 7, (int) line.getY1() - 5, (int) line.getX2(), (int) line.getY2());
+						g.drawLine((int) line.getX2() - 7, (int) line.getY1() + 5, (int) line.getX2(), (int) line.getY2());
+					} else {
+						g.drawLine((int) line.getX1() - 7, (int) line.getY1() - 5, (int) line.getX1(), (int) line.getY2());
+						g.drawLine((int) line.getX1() - 7, (int) line.getY1() + 5, (int) line.getX1(), (int) line.getY2());
+					}
+				}
 			}
 		}
 	}

@@ -23,6 +23,8 @@ public class COTSGenerator
 		System.out.println("Example:");
 		System.out.println("((1->2)||3)");
 		System.out.println("((1->2)||(3->4))");
+		System.out.println("(((1->2)->3)->4)");
+		System.out.println("((1->((2->3)||(4->5)))->6)");
 		System.out.println("");
 		
 		System.out.print("Enter an expression: ");
