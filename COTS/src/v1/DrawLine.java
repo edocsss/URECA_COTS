@@ -39,7 +39,30 @@ public class DrawLine extends JFrame {
 
 			//Draw all lines
 			for (Line2D.Double line: lines) {
-				g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
+				// TODO determine if a line is transformed operation or not
+				// draw solid line
+				// g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
+				
+				// draw dashed line
+				double lengthX = Math.abs(line.getX2() - line.getX1());
+				double lengthY = Math.abs(line.getY2() - line.getY1());
+				if (line.getY2() >= line.getY1()) {
+					for (int i = 0; i < 10; i++) {
+						g.drawLine((int) (line.getX1() + i * lengthX / 10.0),
+								(int) (line.getY1() + i * lengthY / 10.0),
+								(int) (line.getX2() - (9.5 - i) * lengthX / 10.0),
+								(int) (line.getY2() - (9.5 - i) * lengthY / 10.0)
+						);
+					}
+				} else {
+					for (int i = 0; i < 10; i++) {
+						g.drawLine((int) (line.getX2() + i * lengthX / 10.0),
+								(int) (line.getY2() + i * lengthY / 10.0),
+								(int) (line.getX1() - (9.5 - i) * lengthX / 10.0),
+								(int) (line.getY1() - (9.5 - i) * lengthY / 10.0)
+						);
+					}
+				}
 				
 				// draw arrow
 				if (line.getX1() == line.getX2()) {
