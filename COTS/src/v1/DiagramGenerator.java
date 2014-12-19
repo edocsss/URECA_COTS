@@ -6,8 +6,8 @@ import java.awt.geom.Point2D;
 public class DiagramGenerator 
 {
 	// OFFSET X and Y will be used to the determined how long the line should be
-	public static final double OFFSET_X = 100;
-	public static final double OFFSET_Y = -100;
+	public static final double OFFSET_X = 150;
+	public static final double OFFSET_Y = -150;
 	
 	// coordPointer is the point where the line should start and the length is determined by the OFFSET constants
 	private Point2D.Double coordPointer;
@@ -26,26 +26,11 @@ public class DiagramGenerator
 		// Add the Lines2D.Double object directly to the DrawLine object
 		OperationGroup og = OperationGroupManager.getBiggestOperationGroup();
 		og.setPrevConcurrency(false);
-		og.generateDiagram(this.lineDrawer, this.coordPointer, 1, false);
+		og.generateDiagram(this.lineDrawer, this.coordPointer, 1, null, false);
 	}
 	
 	public void generateDiagram ()
 	{
 		this.lineDrawer.initDraw();
-	}
-	
-	public void printOutLine ()
-	{
-		for (Line2D.Double l: this.lineDrawer.getLines())
-		{
-			System.out.println("Start point:");
-			System.out.println("X: " + l.x1);
-			System.out.println("Y: " + l.y1);
-			
-			System.out.println("End point:");
-			System.out.println("X: " + l.x2);
-			System.out.println("Y: " + l.y2);
-			System.out.println("");
-		}
 	}
 }

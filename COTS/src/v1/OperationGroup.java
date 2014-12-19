@@ -1,6 +1,8 @@
 package v1;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class OperationGroup 
 {
@@ -107,7 +109,7 @@ public class OperationGroup
 	 * @param n					An integer indicating how many lines needed to be drawn for the other site
 	 * @param siteTwo			The direction the line is drawn (up or right)
 	 */
-	public void generateDiagram (DrawLine d, Point2D.Double coordPointer, int n, boolean siteTwo)
+	public void generateDiagram (DrawLine d, Point2D.Double coordPointer, int n, ArrayList<Integer> id, boolean siteTwo)
 	{
 		// Temporary variable declaration
 		OperationGroup og;
@@ -116,6 +118,7 @@ public class OperationGroup
 		double[] pointerMovement = new double[] {0.0, 0.0}; // Keep track how far the coordPointer has moved
 		int numLines = 1; // This keeps track the number of operations from the other site need to be drawn when doing one site
 						  // If it is concurrent, at least there is 1 line from other site to be drawn
+		ArrayList<Integer> IDList = new ArrayList<Integer> ();
 		double offsetX, offsetY; // These two variables will be different depending on which site the line is drawn
 		double traceBackX, traceBackY;
 				
@@ -129,6 +132,14 @@ public class OperationGroup
 				
 				// Get the number of lines need to be drawn in Site 1
 				numLines = og.getDepth();
+				
+				// For the purpose of labeling for the other site
+				IDList = this.getOtherSiteID(IDList);
+				Collections.sort(IDList);
+			}
+			else if (this.secondOperand > 0)
+			{
+				IDList.add(this.secondOperand);
 			}
 			
 			// If the first operand is also a OperationGroup
@@ -141,7 +152,7 @@ public class OperationGroup
 				// Retrieve the object
 				og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 				og.setPrevConcurrency(true);
-				og.generateDiagram(d, coordPointer, numLines, false);
+				og.generateDiagram(d, coordPointer, numLines, IDList, false);
 				
 				// Move back the pointer into the place where the interjunction of the two sites before the concurrency happened
 				coordPointer.setLocation(traceBackX, traceBackY);
@@ -158,7 +169,7 @@ public class OperationGroup
 				endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
 				
 				// Construct the line
-				l = new COTSLine(coordPointer, endPoint);
+				l = new COTSLine(coordPointer, endPoint, this.firstOperand);
 				
 				// Add the line to the list
 				d.addLine(l);
@@ -180,7 +191,7 @@ public class OperationGroup
 				for (int i = 0; i < numLines; i++)
 				{
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new COTSLine(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint, IDList.get(i));
 					l.setDashed(true);
 					d.addLine(l);
 					
@@ -197,12 +208,22 @@ public class OperationGroup
 						
 			// Reset the number of lines need to be drawn (this is for SITE 1 now)
 			numLines = 1;
+			IDList.clear();
 			
 			// Update the number of lines from SITE 1 which needs to be drawn while drawing the lines for SITE 2
 			if (this.firstOperand < 0)
 			{
 				og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 				numLines = og.getDepth();
+				
+				// For the purpose of labeling for the other site
+				IDList = this.getOtherSiteID(IDList);
+				Collections.sort(IDList);
+			}
+			// To add the ID of the other site to the IDList
+			else if (this.firstOperand > 0)
+			{
+				IDList.add(this.firstOperand);
 			}
 			
 			// If the second operand is also a OperationGroup
@@ -210,7 +231,7 @@ public class OperationGroup
 			{
 				og = OperationGroupManager.getOperationGroupById(this.secondOperand);
 				og.setPrevConcurrency(true);
-				og.generateDiagram(d, coordPointer, numLines, true);
+				og.generateDiagram(d, coordPointer, numLines, IDList, true);
 			}
 			// When the second operand is now only a SINGLE operand
 			else if (this.secondOperand > 0)
@@ -222,7 +243,7 @@ public class OperationGroup
 				
 				// Determine where the line ends and construct the line object
 				endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-				l = new COTSLine(coordPointer, endPoint);
+				l = new COTSLine(coordPointer, endPoint, this.secondOperand);
 				
 				// Add the line to the list of lines to be drawn
 				d.addLine(l);
@@ -242,7 +263,7 @@ public class OperationGroup
 				for (int i = 0; i < numLines; i++)
 				{
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new COTSLine(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint, IDList.get(i));
 					l.setDashed(true);
 					d.addLine(l);
 					
@@ -266,7 +287,7 @@ public class OperationGroup
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					og.setPrevConcurrency(this.prevConcurrent);
-					og.generateDiagram(d, coordPointer, n, siteTwo);
+					og.generateDiagram(d, coordPointer, n, IDList, siteTwo);
 				}
 				// If it is already the smallest operand, draw the line 
 				else if (this.firstOperand > 0)
@@ -289,7 +310,7 @@ public class OperationGroup
 					
 					// Construct THAT SITE's line
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new COTSLine(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint, this.firstOperand);
 					
 					// Add the line
 					d.addLine(l);
@@ -315,7 +336,7 @@ public class OperationGroup
 					for (int i = 0; i < n; i++)
 					{
 						endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-						l = new COTSLine(coordPointer, endPoint);
+						l = new COTSLine(coordPointer, endPoint, id.get(i));
 						l.setDashed(true);
 						d.addLine(l);
 						
@@ -350,7 +371,7 @@ public class OperationGroup
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					og.setPrevConcurrency(this.prevConcurrent);
-					og.generateDiagram(d, coordPointer, n, siteTwo);
+					og.generateDiagram(d, coordPointer, n, IDList, siteTwo);
 				}
 				else if (this.secondOperand > 0)
 				{
@@ -368,7 +389,7 @@ public class OperationGroup
 					
 					// Construct line, add line, keep track of coordPointer
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new COTSLine(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint, this.secondOperand);
 					
 					d.addLine(l);
 					coordPointer.setLocation(endPoint);
@@ -392,7 +413,7 @@ public class OperationGroup
 					for (int i = 0; i < n; i++)
 					{
 						endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-						l = new COTSLine(coordPointer, endPoint);
+						l = new COTSLine(coordPointer, endPoint, id.get(i));
 						l.setDashed(true);
 						d.addLine(l);
 						
@@ -420,7 +441,7 @@ public class OperationGroup
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					og.setPrevConcurrency(this.prevConcurrent);
-					og.generateDiagram(d, coordPointer, n, siteTwo);
+					og.generateDiagram(d, coordPointer, n, null, siteTwo);
 				}
 				// If it is the smallest operand, then start drawing ONLY THIS SITE!! (because there is no concurrency)
 				else if (this.firstOperand > 0)
@@ -438,7 +459,7 @@ public class OperationGroup
 					}
 					
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new COTSLine(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint, this.firstOperand);
 					
 					d.addLine(l);
 					coordPointer.setLocation(endPoint);
@@ -451,7 +472,7 @@ public class OperationGroup
 				{
 					og = OperationGroupManager.getOperationGroupById(this.secondOperand);
 					og.setPrevConcurrency(this.prevConcurrent);
-					og.generateDiagram(d, coordPointer, n, siteTwo);
+					og.generateDiagram(d, coordPointer, n, null, siteTwo);
 				}
 					
 				// Drawing the second operand
@@ -469,7 +490,7 @@ public class OperationGroup
 					}
 					
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new COTSLine(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint, this.secondOperand);
 					d.addLine(l);
 					
 					coordPointer.setLocation(endPoint);
@@ -513,6 +534,34 @@ public class OperationGroup
 			// As there are two SITE, get the most number of operations
 			return (firstDepth > secondDepth)? firstDepth : secondDepth;
 		}
+	}
+	
+	public ArrayList<Integer> getOtherSiteID (ArrayList<Integer> a) 
+	{
+		if (this.firstOperand > 0)
+		{
+			a.add(this.firstOperand);
+		}
+		
+		if (this.secondOperand > 0)
+		{
+			a.add(this.secondOperand);
+		}
+		
+		if (this.firstOperand > 0 && this.secondOperand > 0)
+		{
+			return a;
+		}
+		else if (this.firstOperand < 0)
+		{
+			return OperationGroupManager.getOperationGroupById(this.firstOperand).getOtherSiteID(a);
+		}
+		else if (this.secondOperand < 0)
+		{
+			return OperationGroupManager.getOperationGroupById(this.secondOperand).getOtherSiteID(a);
+		}
+		
+		return a;
 	}
 	
 	public int getFirstOperand ()

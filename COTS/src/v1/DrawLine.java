@@ -2,14 +2,15 @@ package v1;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class DrawLine extends JFrame {
 	// The canvas width and height
-	public static final int CANVAS_WIDTH = 640;
-	public static final int CANVAS_HEIGHT = 480;
+	public static final int CANVAS_WIDTH = 960;
+	public static final int CANVAS_HEIGHT = 640;
 	
 	// A canvas object (based on private Class DrawCanvas)
 	private DrawCanvas canvas;
@@ -76,7 +77,7 @@ public class DrawLine extends JFrame {
 						g.drawLine((int) line.getX1() - 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
 						g.drawLine((int) line.getX1() + 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
 					}
-				} else if (line.getY1() == line.getY2()){
+				} else if (line.getY1() == line.getY2()) {
 					// horizontal line
 					if (line.getX2() > line.getX1()) {
 						g.drawLine((int) line.getX2() - 7, (int) line.getY1() - 5, (int) line.getX2(), (int) line.getY2());
@@ -86,6 +87,37 @@ public class DrawLine extends JFrame {
 						g.drawLine((int) line.getX1() - 7, (int) line.getY1() + 5, (int) line.getX1(), (int) line.getY2());
 					}
 				}
+				
+				// TODO Position adjustment
+				// Draw text context
+				int curContext = line.getCurContext();
+				ArrayList<Integer> prev = new ArrayList<Integer> ();
+				
+				for (int i: line.getPrevContext()) {
+					prev.add(i);
+				}
+				
+				Collections.sort(prev);
+				String prevString = "";
+				
+				for (int i = 0; i < prev.size(); i++) {
+					if (i == 0) {
+						prevString += "{";
+					}
+					if (i == prev.size() - 1) {
+						prevString += prev.get(i) + "}";
+					} else {
+						prevString += prev.get(i) + ", ";
+					}
+				}
+				
+				String contextString = "" + curContext + prevString;
+				
+				double x = (line.getX1() + line.getX2()) / 2;
+				double y = (line.getY1() + line.getY2()) / 2;
+				
+				g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 15));
+				g.drawString(contextString, (int) x, (int) y);
 			}
 		}
 	}
@@ -99,11 +131,46 @@ public class DrawLine extends JFrame {
 	}
 	
 	public void addLine (COTSLine l) {
+		this.setLineContext(l);
+		
+		// Debugging purpose
+		System.out.println("Start point:");
+		System.out.println("X: " + l.x1);
+		System.out.println("Y: " + l.y1);
+		
+		System.out.println("End point:");
+		System.out.println("X: " + l.x2);
+		System.out.println("Y: " + l.y2);
+		
+		System.out.println("Cur: " + l.getCurContext());
+		System.out.print("Prev: ");
+		for (int i: l.getPrevContext()) {
+			System.out.print(i + " ");
+		}
+		
+		System.out.println("\n");
+		
 		this.lines.add(l);
 	}
 	
 	public void removeAllLines () {
 		this.lines.clear();
+	}
+	
+	// Adding context
+	private void setLineContext (COTSLine l) {
+		if (this.lines.size() == 0) return;
+		for (COTSLine line: this.lines) {
+			
+			if (line.getP2().equals(l.getP1())) {				
+				for (int i: line.getPrevContext()) {
+					l.addPrevContext(i);
+					System.out.println(i); // Debugging purpose
+				}
+				
+				l.addPrevContext(line.getCurContext());
+			}
+		}
 	}
 	
 	/*

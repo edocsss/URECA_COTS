@@ -41,8 +41,6 @@ public class COTSGenerator
 		
 		DiagramGenerator diagramGenerator = new DiagramGenerator();
 		diagramGenerator.constructLines();
-		
-		diagramGenerator.printOutLine();
 		diagramGenerator.generateDiagram();
 		
 		scan.close();
