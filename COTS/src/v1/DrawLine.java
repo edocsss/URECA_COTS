@@ -1,7 +1,6 @@
 package v1;
 
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -16,12 +15,12 @@ public class DrawLine extends JFrame {
 	private DrawCanvas canvas;
 	
 	//ArrayList / Vector to get all the Line2D object to be drawn -> will be drawn by the Overridden paintComponent()
-	private ArrayList<Line2D.Double> lines;
+	private ArrayList<COTSLine> lines;
 	
 	//Constructor
 	public DrawLine () {
 		//Instantiating the ArrayList
-		this.lines = new ArrayList<Line2D.Double>();
+		this.lines = new ArrayList<COTSLine>();
 	}
 	
 	/*
@@ -37,30 +36,34 @@ public class DrawLine extends JFrame {
 			g.setColor(Color.BLACK);
 
 			//Draw all lines
-			for (Line2D.Double line: lines) {
+			for (COTSLine line: lines) {
 				// TODO determine if a line is transformed operation or not
 				// draw solid line
 				// g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
 				
-				// draw dashed line
-				double lengthX = Math.abs(line.getX2() - line.getX1());
-				double lengthY = Math.abs(line.getY2() - line.getY1());
-				if (line.getY2() >= line.getY1()) {
-					for (int i = 0; i < 10; i++) {
-						g.drawLine((int) (line.getX1() + i * lengthX / 10.0),
-								(int) (line.getY1() + i * lengthY / 10.0),
-								(int) (line.getX2() - (9.5 - i) * lengthX / 10.0),
-								(int) (line.getY2() - (9.5 - i) * lengthY / 10.0)
-						);
+				if (line.getDashed()) {
+					// draw dashed line
+					double lengthX = Math.abs(line.getX2() - line.getX1());
+					double lengthY = Math.abs(line.getY2() - line.getY1());
+					if (line.getY2() >= line.getY1()) {
+						for (int i = 0; i < 10; i++) {
+							g.drawLine((int) (line.getX1() + i * lengthX / 10.0),
+									(int) (line.getY1() + i * lengthY / 10.0),
+									(int) (line.getX2() - (9.5 - i) * lengthX / 10.0),
+									(int) (line.getY2() - (9.5 - i) * lengthY / 10.0)
+							);
+						}
+					} else {
+						for (int i = 0; i < 10; i++) {
+							g.drawLine((int) (line.getX2() + i * lengthX / 10.0),
+									(int) (line.getY2() + i * lengthY / 10.0),
+									(int) (line.getX1() - (9.5 - i) * lengthX / 10.0),
+									(int) (line.getY1() - (9.5 - i) * lengthY / 10.0)
+							);
+						}
 					}
 				} else {
-					for (int i = 0; i < 10; i++) {
-						g.drawLine((int) (line.getX2() + i * lengthX / 10.0),
-								(int) (line.getY2() + i * lengthY / 10.0),
-								(int) (line.getX1() - (9.5 - i) * lengthX / 10.0),
-								(int) (line.getY1() - (9.5 - i) * lengthY / 10.0)
-						);
-					}
+					g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
 				}
 				
 				// draw arrow
@@ -91,11 +94,11 @@ public class DrawLine extends JFrame {
 	 *  Getter and setter method
 	 */
 	
-	public ArrayList<Line2D.Double> getLines () {
+	public ArrayList<COTSLine> getLines () {
 		return this.lines;
 	}
 	
-	public void addLine (Line2D.Double l) {
+	public void addLine (COTSLine l) {
 		this.lines.add(l);
 	}
 	

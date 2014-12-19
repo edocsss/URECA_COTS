@@ -1,6 +1,5 @@
 package v1;
 
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 public class OperationGroup 
@@ -113,7 +112,7 @@ public class OperationGroup
 		// Temporary variable declaration
 		OperationGroup og;
 		Point2D.Double endPoint;
-		Line2D.Double l;
+		COTSLine l;
 		double[] pointerMovement = new double[] {0.0, 0.0}; // Keep track how far the coordPointer has moved
 		int numLines = 1; // This keeps track the number of operations from the other site need to be drawn when doing one site
 						  // If it is concurrent, at least there is 1 line from other site to be drawn
@@ -159,7 +158,7 @@ public class OperationGroup
 				endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
 				
 				// Construct the line
-				l = new Line2D.Double(coordPointer, endPoint);
+				l = new COTSLine(coordPointer, endPoint);
 				
 				// Add the line to the list
 				d.addLine(l);
@@ -181,7 +180,8 @@ public class OperationGroup
 				for (int i = 0; i < numLines; i++)
 				{
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new Line2D.Double(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint);
+					l.setDashed(true);
 					d.addLine(l);
 					
 					// Update the pointer and how far it has moved
@@ -222,7 +222,7 @@ public class OperationGroup
 				
 				// Determine where the line ends and construct the line object
 				endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-				l = new Line2D.Double(coordPointer, endPoint);
+				l = new COTSLine(coordPointer, endPoint);
 				
 				// Add the line to the list of lines to be drawn
 				d.addLine(l);
@@ -242,7 +242,8 @@ public class OperationGroup
 				for (int i = 0; i < numLines; i++)
 				{
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new Line2D.Double(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint);
+					l.setDashed(true);
 					d.addLine(l);
 					
 					// Update and prepare the coordPointer for the next drawing 
@@ -288,7 +289,7 @@ public class OperationGroup
 					
 					// Construct THAT SITE's line
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new Line2D.Double(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint);
 					
 					// Add the line
 					d.addLine(l);
@@ -314,7 +315,8 @@ public class OperationGroup
 					for (int i = 0; i < n; i++)
 					{
 						endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-						l = new Line2D.Double(coordPointer, endPoint);
+						l = new COTSLine(coordPointer, endPoint);
+						l.setDashed(true);
 						d.addLine(l);
 						
 						coordPointer.setLocation(endPoint);
@@ -366,7 +368,7 @@ public class OperationGroup
 					
 					// Construct line, add line, keep track of coordPointer
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new Line2D.Double(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint);
 					
 					d.addLine(l);
 					coordPointer.setLocation(endPoint);
@@ -390,7 +392,8 @@ public class OperationGroup
 					for (int i = 0; i < n; i++)
 					{
 						endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-						l = new Line2D.Double(coordPointer, endPoint);
+						l = new COTSLine(coordPointer, endPoint);
+						l.setDashed(true);
 						d.addLine(l);
 						
 						coordPointer.setLocation(endPoint);
@@ -435,7 +438,7 @@ public class OperationGroup
 					}
 					
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new Line2D.Double(coordPointer, endPoint);
+					l = new COTSLine(coordPointer, endPoint);
 					
 					d.addLine(l);
 					coordPointer.setLocation(endPoint);
@@ -466,9 +469,9 @@ public class OperationGroup
 					}
 					
 					endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
-					l = new Line2D.Double(coordPointer, endPoint);
-					
+					l = new COTSLine(coordPointer, endPoint);
 					d.addLine(l);
+					
 					coordPointer.setLocation(endPoint);
 					pointerMovement[0] += offsetX;
 					pointerMovement[1] += offsetY;
