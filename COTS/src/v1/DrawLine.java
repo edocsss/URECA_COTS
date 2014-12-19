@@ -38,10 +38,6 @@ public class DrawLine extends JFrame {
 
 			//Draw all lines
 			for (COTSLine line: lines) {
-				// TODO determine if a line is transformed operation or not
-				// draw solid line
-				// g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
-				
 				if (line.getDashed()) {
 					// draw dashed line
 					double lengthX = Math.abs(line.getX2() - line.getX1());
@@ -64,6 +60,7 @@ public class DrawLine extends JFrame {
 						}
 					}
 				} else {
+					// draw solid line
 					g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
 				}
 				
