@@ -28,6 +28,12 @@ public class COTSGenerator
 		System.out.print("Enter an expression: ");
 		s = scan.next();
 		
+		while (s.length() == 0) {
+			System.out.println("Wrong Expression!");
+			System.out.print("Enter a valid expression: ");
+			s = scan.next();
+		}
+		
 		Parser parser = new Parser(s);
 		parser.parseExpression();
 		

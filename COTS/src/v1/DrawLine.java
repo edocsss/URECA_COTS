@@ -33,8 +33,7 @@ public class DrawLine extends JFrame {
 		@Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			setBackground(Color.WHITE);
-			
+			setBackground(Color.WHITE);		
 			g.setColor(Color.BLACK);
 
 			//Draw all lines
