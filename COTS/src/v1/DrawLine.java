@@ -11,6 +11,7 @@ public class DrawLine extends JFrame {
 	// The canvas width and height
 	public static final int CANVAS_WIDTH = 960;
 	public static final int CANVAS_HEIGHT = 640;
+	private static final int TEXT_OFFSET = 5;
 	
 	// A canvas object (based on private Class DrawCanvas)
 	private DrawCanvas canvas;
@@ -44,18 +45,18 @@ public class DrawLine extends JFrame {
 					double lengthY = Math.abs(line.getY2() - line.getY1());
 					if (line.getY2() >= line.getY1()) {
 						for (int i = 0; i < 10; i++) {
-							g.drawLine((int) (line.getX1() + i * lengthX / 10.0),
-									(int) (line.getY1() + i * lengthY / 10.0),
-									(int) (line.getX2() - (9.5 - i) * lengthX / 10.0),
-									(int) (line.getY2() - (9.5 - i) * lengthY / 10.0)
+							g.drawLine(	(int) (line.getX1() + i * lengthX / 10.0),
+										(int) (line.getY1() + i * lengthY / 10.0),
+										(int) (line.getX2() - (9.5 - i) * lengthX / 10.0),
+										(int) (line.getY2() - (9.5 - i) * lengthY / 10.0)
 							);
 						}
 					} else {
 						for (int i = 0; i < 10; i++) {
-							g.drawLine((int) (line.getX2() + i * lengthX / 10.0),
-									(int) (line.getY2() + i * lengthY / 10.0),
-									(int) (line.getX1() - (9.5 - i) * lengthX / 10.0),
-									(int) (line.getY1() - (9.5 - i) * lengthY / 10.0)
+							g.drawLine(	(int) (line.getX2() + i * lengthX / 10.0),
+										(int) (line.getY2() + i * lengthY / 10.0),
+										(int) (line.getX1() - (9.5 - i) * lengthX / 10.0),
+										(int) (line.getY1() - (9.5 - i) * lengthY / 10.0)
 							);
 						}
 					}
@@ -90,6 +91,7 @@ public class DrawLine extends JFrame {
 				int curContext = line.getCurContext();
 				ArrayList<Integer> prev = new ArrayList<Integer> ();
 				
+				// Use an ArrayList to sort the context -> HashSet is not "sortable"
 				for (int i: line.getPrevContext()) {
 					prev.add(i);
 				}
@@ -101,6 +103,7 @@ public class DrawLine extends JFrame {
 					if (i == 0) {
 						prevString += "{";
 					}
+					
 					if (i == prev.size() - 1) {
 						prevString += prev.get(i) + "}";
 					} else {
@@ -110,11 +113,31 @@ public class DrawLine extends JFrame {
 				
 				String contextString = "" + curContext + prevString;
 				
+				// Position of the textbox
 				double x = (line.getX1() + line.getX2()) / 2;
 				double y = (line.getY1() + line.getY2()) / 2;
 				
-				g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 15));
+				// TEXT POSITION ADJUSTMENT
+				// Horizontal Line
+				if (line.getY1() == line.getY2()) {
+					x -= (contextString.length() / 2) * TEXT_OFFSET;
+					y -= 10;
+				} 
+				// Vertical line
+				// No need for text adjustment as the text box must have been in the middle of the line
+				else if (line.getX1() == line.getX2()) {
+					x += 10; 
+				}
+				
+				// Set font properties
+				g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 14));
+				
+				// Draw the textbox
 				g.drawString(contextString, (int) x, (int) y);
+				
+				// Draw title
+				g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 30));
+				g.drawString("COTS Diagram Generator", CANVAS_WIDTH / 2 - 150, 50);
 			}
 		}
 	}
