@@ -86,7 +86,6 @@ public class DrawLine extends JFrame {
 					}
 				}
 				
-				// TODO Position adjustment
 				// Draw text context
 				int curContext = line.getCurContext();
 				ArrayList<Integer> prev = new ArrayList<Integer> ();
@@ -96,9 +95,11 @@ public class DrawLine extends JFrame {
 					prev.add(i);
 				}
 				
+				// Sorting
 				Collections.sort(prev);
-				String prevString = "";
 				
+				// String containing all previous context
+				String prevString = "";
 				for (int i = 0; i < prev.size(); i++) {
 					if (i == 0) {
 						prevString += "{";
@@ -111,6 +112,7 @@ public class DrawLine extends JFrame {
 					}
 				}
 				
+				// Final string
 				String contextString = "" + curContext + prevString;
 				
 				// Position of the textbox
@@ -193,6 +195,51 @@ public class DrawLine extends JFrame {
 		}
 	}
 	
+	// Get the x or y position of the leftmost, rightmost, topmost, or bottommost point
+	// Purpose: readjusting the position of the whole diagram
+	public double getLeftMostPoint () {
+		double result = 0.0;
+		for (COTSLine l: this.lines) {
+			if (l.getX1() < result) {
+				result = l.getX1();
+			}
+		}
+		
+		return result;
+	}
+	
+	public double getRightMostPoint () {
+		double result = 0.0;
+		for (COTSLine l: this.lines) {
+			if (l.getX2() > result) {
+				result = l.getX2();
+			}
+		}
+		
+		return result;
+	}
+	
+	public double getTopMostPoint () {
+		double result = 0.0;
+		for (COTSLine l: this.lines) {
+			if (l.getY2() < result) {
+				result = l.getY2();
+			}
+		}
+		
+		return result;
+	}
+	
+	public double getBottomMostPoint () {
+		double result = 0.0;
+		for (COTSLine l: this.lines) {
+			if (l.getY1() > result) {
+				result = l.getY1();
+			}
+		}
+		
+		return result;
+	}
 	/*
 	 * Initialization of drawing
 	 * Call initDraw() IF AND ONLY IF all lines to be drawn has been added to the attribute lines

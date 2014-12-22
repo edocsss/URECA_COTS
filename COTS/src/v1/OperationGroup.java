@@ -287,7 +287,7 @@ public class OperationGroup
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					og.setPrevConcurrency(this.prevConcurrent);
-					og.generateDiagram(d, coordPointer, n, IDList, siteTwo);
+					og.generateDiagram(d, coordPointer, n, id, siteTwo);
 				}
 				// If it is already the smallest operand, draw the line 
 				else if (this.firstOperand > 0)
@@ -323,8 +323,7 @@ public class OperationGroup
 					if (siteTwo)
 					{
 						offsetX = DiagramGenerator.OFFSET_X;
-						offsetY = 0.0;
-						
+						offsetY = 0.0;	
 					}
 					else
 					{
@@ -335,7 +334,7 @@ public class OperationGroup
 					// Draw the lines from the other site
 					for (int i = 0; i < n; i++)
 					{
-						endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
+						endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);						
 						l = new COTSLine(coordPointer, endPoint, id.get(i));
 						l.setDashed(true);
 						d.addLine(l);
@@ -371,7 +370,7 @@ public class OperationGroup
 				{
 					og = OperationGroupManager.getOperationGroupById(this.firstOperand);
 					og.setPrevConcurrency(this.prevConcurrent);
-					og.generateDiagram(d, coordPointer, n, IDList, siteTwo);
+					og.generateDiagram(d, coordPointer, n, id, siteTwo);
 				}
 				else if (this.secondOperand > 0)
 				{
