@@ -36,6 +36,9 @@ public class DrawLine extends JFrame {
 			super.paintComponent(g);
 			setBackground(Color.WHITE);		
 			g.setColor(Color.BLACK);
+			
+			// Translate the center of the graphics so that position adjusment for the whole diagram can be done easily
+			//g.translate(100, 100);
 
 			//Draw all lines
 			for (COTSLine line: lines) {

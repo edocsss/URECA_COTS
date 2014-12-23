@@ -2,7 +2,7 @@ package v1;
 
 import java.util.ArrayList;
 
-public class OperationGroupManager 
+public final class OperationGroupManager 
 {
 	/**
 	 * Stores all Operation Group objects to ease getting an OperationGroup object when the diagram is generated
