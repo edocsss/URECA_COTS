@@ -14,6 +14,7 @@ public class Parser
 		this.idCounter = -1;
 	}
 	
+	// TODO add a TRY-CATCH block to catch invalid input (wrong bracketting, etc.)
 	public void parseExpression ()
 	{
 		// Stores the expression

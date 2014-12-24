@@ -60,12 +60,13 @@ public class COTSGenerator extends JFrame
         		+ "((1->((2->3)||(4->5)))->6)\n"
         		+ "\n",
         		"((1->((2->3)||(4->5)))->6)");
+        
         TrackResponse(input);
     }
     
     //Append the picked choice to the tracker JTextArea
     public void TrackResponse(String response)
-    {
+    {	
         //showInputDialog method returns null if the dialog is exited
         //without an option being chosen
         if (response == null)
