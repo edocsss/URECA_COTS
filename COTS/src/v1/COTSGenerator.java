@@ -30,7 +30,7 @@ public class COTSGenerator extends JFrame
 	         public void run()
 	         {
 	             //create GUI frame
-	             new COTSGenerator().setVisible(true);          
+	             new COTSGenerator();
 	         }
 	     });
 	}
@@ -47,7 +47,7 @@ public class COTSGenerator extends JFrame
         //Using JTextArea to show clicks and responses
         tracker = new JTextArea("COTS Diagram Generator\n");
         add(tracker);
-        setVisible(true);
+        setVisible(true); // By default, the textarea is VISIBLE on the JFrame
         
         //Input dialog with a text field
         String input =  JOptionPane.showInputDialog(this, "Please note that current version of COTS Diagram Generator has a format for a given expression:\n"
