@@ -162,7 +162,7 @@ public class OperationGroup
 			{
 				// The first operand of a concurrent operation must be in the first site
 				// Draw to the right -> change the X value
-				offsetX = DiagramGenerator.OFFSET_X;
+				offsetX = DiagramGenerator.POINTER_OFFSET_X;
 				offsetY = 0.0;
 				
 				// Decide where the line will end
@@ -185,7 +185,7 @@ public class OperationGroup
 				// This offset will be used to draw the OTHER SITE lines (in this case is Site 2 and therefore it
 				// will be drawn upwards)
 				offsetX = 0.0;
-				offsetY = DiagramGenerator.OFFSET_Y;
+				offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 				
 				// Construct and add the lines of the SITE 2
 				for (int i = 0; i < numLines; i++)
@@ -239,7 +239,7 @@ public class OperationGroup
 				// Since this is SITE 2, the drawing of SITE 2's own operation is UPWARDS
 				// That's why the Y is changed
 				offsetX = 0.0;
-				offsetY = DiagramGenerator.OFFSET_Y;
+				offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 				
 				// Determine where the line ends and construct the line object
 				endPoint = new Point2D.Double(coordPointer.x + offsetX, coordPointer.y + offsetY);
@@ -256,7 +256,7 @@ public class OperationGroup
 				pointerMovement[1] += offsetY;
 				
 				// Update the offset to prepare drawing the other site's lines (SITE 1)
-				offsetX = DiagramGenerator.OFFSET_X;
+				offsetX = DiagramGenerator.POINTER_OFFSET_X;
 				offsetY = 0.0;
 				
 				// Actually draws and add the lines from SITE 1
@@ -299,12 +299,12 @@ public class OperationGroup
 					if (siteTwo)
 					{
 						offsetX = 0.0;
-						offsetY = DiagramGenerator.OFFSET_Y;
+						offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 					}
 					// Drawing for SITE 1
 					else
 					{
-						offsetX = DiagramGenerator.OFFSET_X;
+						offsetX = DiagramGenerator.POINTER_OFFSET_X;
 						offsetY = 0.0;
 					}
 					
@@ -322,13 +322,13 @@ public class OperationGroup
 					// That's why below is the swapping of the offset
 					if (siteTwo)
 					{
-						offsetX = DiagramGenerator.OFFSET_X;
+						offsetX = DiagramGenerator.POINTER_OFFSET_X;
 						offsetY = 0.0;	
 					}
 					else
 					{
 						offsetX = 0.0;
-						offsetY = DiagramGenerator.OFFSET_Y;
+						offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 					}
 										
 					// Draw the lines from the other site
@@ -362,7 +362,7 @@ public class OperationGroup
 				{
 					// n * OFFSET_X means that there are n lines to be drawn from the other site, and per line has the width
 					// of OFFSET_X
-					coordPointer.setLocation(coordPointer.x - n * DiagramGenerator.OFFSET_X, coordPointer.y);
+					coordPointer.setLocation(coordPointer.x - n * DiagramGenerator.POINTER_OFFSET_X, coordPointer.y);
 				}
 				
 				// If the second operand is a OperationGroup
@@ -378,11 +378,11 @@ public class OperationGroup
 					if (siteTwo)
 					{
 						offsetX = 0.0;
-						offsetY = DiagramGenerator.OFFSET_Y;
+						offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 					}
 					else
 					{
-						offsetX = DiagramGenerator.OFFSET_X;
+						offsetX = DiagramGenerator.POINTER_OFFSET_X;
 						offsetY = 0.0;
 					}
 					
@@ -398,14 +398,14 @@ public class OperationGroup
 					// Setting up for drawing the other SITE's lines
 					if (siteTwo)
 					{
-						offsetX = DiagramGenerator.OFFSET_X;
+						offsetX = DiagramGenerator.POINTER_OFFSET_X;
 						offsetY = 0.0;
 						
 					}
 					else
 					{
 						offsetX = 0.0;
-						offsetY = DiagramGenerator.OFFSET_Y;
+						offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 					}
 					
 					// Actually drawing the other SITE's line
@@ -449,11 +449,11 @@ public class OperationGroup
 					if (siteTwo)
 					{
 						offsetX = 0.0;
-						offsetY = DiagramGenerator.OFFSET_Y;
+						offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 					}
 					else
 					{
-						offsetX = DiagramGenerator.OFFSET_X;
+						offsetX = DiagramGenerator.POINTER_OFFSET_X;
 						offsetY = 0.0;
 					}
 					
@@ -480,11 +480,11 @@ public class OperationGroup
 					if (siteTwo)
 					{
 						offsetX = 0.0;
-						offsetY = DiagramGenerator.OFFSET_Y;
+						offsetY = DiagramGenerator.POINTER_OFFSET_Y;
 					}
 					else
 					{
-						offsetX = DiagramGenerator.OFFSET_X;
+						offsetX = DiagramGenerator.POINTER_OFFSET_X;
 						offsetY = 0.0;
 					}
 					

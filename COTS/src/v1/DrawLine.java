@@ -8,28 +8,52 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class DrawLine extends JFrame {
-	// The canvas width and height
-	public static final int CANVAS_WIDTH = 960;
-	public static final int CANVAS_HEIGHT = 640;
-	private static final int TEXT_OFFSET = 5;
+	// The canvas properties
+	public static final int TITLE_CANVAS_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
+	public static final int TITLE_CANVAS_HEIGHT = 61;
+	public static final int DIAGRAM_CANVAS_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
+	public static final int DIAGRAM_CANVAS_HEIGHT = Toolkit.getDefaultToolkit().getScreenSize().height - TITLE_CANVAS_HEIGHT - 63;
+		
+	// Title properties
+	private final int TITLE_OFFSET = 165; // This offset is based on the font size and font type -> should be independent from the screen size
 	
-	// A canvas object (based on private Class DrawCanvas)
-	private DrawCanvas canvas;
+	// Diagram position properties
+	private final int DIAGRAM_LIMIT_LEFT = 60;
+	private final int DIAGRAM_LIMIT_TOP = 50;
 	
-	//ArrayList / Vector to get all the Line2D object to be drawn -> will be drawn by the Overridden paintComponent()
+	// Other properties
+	private final int TEXT_OFFSET = 5;
+	private final int MINIMIZED_CANVAS_WIDTH = Toolkit.getDefaultToolkit().getScreenSize().width;
+	private final int MINIMIZED_CANVAS_HEIGHT = 600;
+	
+	// Canvas objects (based on private Class DrawCanvas)
+	private DrawCanvas diagramCanvas;
+	private DrawCanvas titleCanvas;
+	
+	// ArrayList / Vector to get all the Line2D object to be drawn -> will be drawn by the Overridden paintComponent()
 	private ArrayList<COTSLine> lines;
 	
-	//Constructor
+	// Constructor
 	public DrawLine () {
-		//Instantiating the ArrayList
+		// Instantiating the ArrayList
 		this.lines = new ArrayList<COTSLine>();
+		
+		// Maximizing the window
+		this.setExtendedState(Frame.MAXIMIZED_BOTH);
+		this.setSize(new Dimension(MINIMIZED_CANVAS_WIDTH, MINIMIZED_CANVAS_HEIGHT));
 	}
 	
 	/*
 	 * Define an inner class DrawCanvas which is a JPanel where the Line2D objects will be drawn
 	 */
 	
-	private class DrawCanvas extends JPanel{
+	private class DrawCanvas extends JPanel {
+		private boolean title = false;
+		
+		public DrawCanvas (boolean title) {
+			this.title = title;
+		}
+		
 		//paintComponent is a built in function from Swing -> will be executed when DrawCanvas object is created
 		@Override
 		public void paintComponent(Graphics g) {
@@ -37,112 +61,121 @@ public class DrawLine extends JFrame {
 			setBackground(Color.WHITE);		
 			g.setColor(Color.BLACK);
 			
-			// Translate the center of the graphics so that position adjusment for the whole diagram can be done easily
-			//g.translate(100, 100);
-
-			//Draw all lines
-			for (COTSLine line: lines) {
-				if (line.getDashed()) {
-					// draw dashed line
-					double lengthX = Math.abs(line.getX2() - line.getX1());
-					double lengthY = Math.abs(line.getY2() - line.getY1());
-					if (line.getY2() >= line.getY1()) {
-						for (int i = 0; i < 10; i++) {
-							g.drawLine(	(int) (line.getX1() + i * lengthX / 10.0),
-										(int) (line.getY1() + i * lengthY / 10.0),
-										(int) (line.getX2() - (9.5 - i) * lengthX / 10.0),
-										(int) (line.getY2() - (9.5 - i) * lengthY / 10.0)
-							);
+			if (!this.title) {
+				int horizontalTranslation = diagramHorizontalTranslation();
+				int verticalTranslation = diagramVerticalTranslation();
+				
+				System.out.println(horizontalTranslation + "   " + verticalTranslation + "   ");
+				
+				// Translate the center of the graphics so that position adjusment for the whole diagram can be done easily
+				g.translate(horizontalTranslation, -verticalTranslation);
+	
+				//Draw all lines
+				for (COTSLine line: lines) {
+					if (line.getDashed()) {
+						// draw dashed line
+						double lengthX = Math.abs(line.getX2() - line.getX1());
+						double lengthY = Math.abs(line.getY2() - line.getY1());
+						if (line.getY2() >= line.getY1()) {
+							for (int i = 0; i < 10; i++) {
+								g.drawLine(	(int) (line.getX1() + i * lengthX / 10.0),
+											(int) (line.getY1() + i * lengthY / 10.0),
+											(int) (line.getX2() - (9.5 - i) * lengthX / 10.0),
+											(int) (line.getY2() - (9.5 - i) * lengthY / 10.0)
+								);
+							}
+						} else {
+							for (int i = 0; i < 10; i++) {
+								g.drawLine(	(int) (line.getX2() + i * lengthX / 10.0),
+											(int) (line.getY2() + i * lengthY / 10.0),
+											(int) (line.getX1() - (9.5 - i) * lengthX / 10.0),
+											(int) (line.getY1() - (9.5 - i) * lengthY / 10.0)
+								);
+							}
 						}
 					} else {
-						for (int i = 0; i < 10; i++) {
-							g.drawLine(	(int) (line.getX2() + i * lengthX / 10.0),
-										(int) (line.getY2() + i * lengthY / 10.0),
-										(int) (line.getX1() - (9.5 - i) * lengthX / 10.0),
-										(int) (line.getY1() - (9.5 - i) * lengthY / 10.0)
-							);
-						}
-					}
-				} else {
-					// draw solid line
-					g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
-				}
-				
-				// draw arrow
-				if (line.getX1() == line.getX2()) {
-					// vertical line
-					if (line.getY2() > line.getY1()) {
-						g.drawLine((int) line.getX1() - 5, (int) line.getY1() + 7, (int) line.getX2(), (int) line.getY1());
-						g.drawLine((int) line.getX1() + 5, (int) line.getY1() + 7, (int) line.getX2(), (int) line.getY1());
-					} else {
-						g.drawLine((int) line.getX1() - 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
-						g.drawLine((int) line.getX1() + 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
-					}
-				} else if (line.getY1() == line.getY2()) {
-					// horizontal line
-					if (line.getX2() > line.getX1()) {
-						g.drawLine((int) line.getX2() - 7, (int) line.getY1() - 5, (int) line.getX2(), (int) line.getY2());
-						g.drawLine((int) line.getX2() - 7, (int) line.getY1() + 5, (int) line.getX2(), (int) line.getY2());
-					} else {
-						g.drawLine((int) line.getX1() - 7, (int) line.getY1() - 5, (int) line.getX1(), (int) line.getY2());
-						g.drawLine((int) line.getX1() - 7, (int) line.getY1() + 5, (int) line.getX1(), (int) line.getY2());
-					}
-				}
-				
-				// Draw text context
-				int curContext = line.getCurContext();
-				ArrayList<Integer> prev = new ArrayList<Integer> ();
-				
-				// Use an ArrayList to sort the context -> HashSet is not "sortable"
-				for (int i: line.getPrevContext()) {
-					prev.add(i);
-				}
-				
-				// Sorting
-				Collections.sort(prev);
-				
-				// String containing all previous context
-				String prevString = "";
-				for (int i = 0; i < prev.size(); i++) {
-					if (i == 0) {
-						prevString += "{";
+						// draw solid line
+						g.drawLine((int) line.getX1(), (int) line.getY1(), (int) line.getX2(), (int) line.getY2());
 					}
 					
-					if (i == prev.size() - 1) {
-						prevString += prev.get(i) + "}";
-					} else {
-						prevString += prev.get(i) + ", ";
+					// draw arrow
+					if (line.getX1() == line.getX2()) {
+						// vertical line
+						if (line.getY2() > line.getY1()) {
+							g.drawLine((int) line.getX1() - 5, (int) line.getY1() + 7, (int) line.getX2(), (int) line.getY1());
+							g.drawLine((int) line.getX1() + 5, (int) line.getY1() + 7, (int) line.getX2(), (int) line.getY1());
+						} else {
+							g.drawLine((int) line.getX1() - 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
+							g.drawLine((int) line.getX1() + 5, (int) line.getY2() + 7, (int) line.getX2(), (int) line.getY2());
+						}
+					} else if (line.getY1() == line.getY2()) {
+						// horizontal line
+						if (line.getX2() > line.getX1()) {
+							g.drawLine((int) line.getX2() - 7, (int) line.getY1() - 5, (int) line.getX2(), (int) line.getY2());
+							g.drawLine((int) line.getX2() - 7, (int) line.getY1() + 5, (int) line.getX2(), (int) line.getY2());
+						} else {
+							g.drawLine((int) line.getX1() - 7, (int) line.getY1() - 5, (int) line.getX1(), (int) line.getY2());
+							g.drawLine((int) line.getX1() - 7, (int) line.getY1() + 5, (int) line.getX1(), (int) line.getY2());
+						}
 					}
+					
+					// Draw text context
+					int curContext = line.getCurContext();
+					ArrayList<Integer> prev = new ArrayList<Integer> ();
+					
+					// Use an ArrayList to sort the context -> HashSet is not "sortable"
+					for (int i: line.getPrevContext()) {
+						prev.add(i);
+					}
+					
+					// Sorting
+					Collections.sort(prev);
+					
+					// String containing all previous context
+					String prevString = "";
+					for (int i = 0; i < prev.size(); i++) {
+						if (i == 0) {
+							prevString += "{";
+						}
+						
+						if (i == prev.size() - 1) {
+							prevString += prev.get(i) + "}";
+						} else {
+							prevString += prev.get(i) + ", ";
+						}
+					}
+					
+					// Final string
+					String contextString = "" + curContext + prevString;
+					
+					// Position of the textbox
+					double x = (line.getX1() + line.getX2()) / 2;
+					double y = (line.getY1() + line.getY2()) / 2;
+					
+					// TEXT POSITION ADJUSTMENT
+					// Horizontal Line
+					if (line.getY1() == line.getY2()) {
+						x -= (contextString.length() / 2) * TEXT_OFFSET;
+						y -= 10;
+					} 
+					// Vertical line
+					// No need for text adjustment as the text box must have been in the middle of the line
+					else if (line.getX1() == line.getX2()) {
+						x += 10; 
+					}
+					
+					// Set font properties
+					g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 14));
+					
+					// Draw the textbox
+					g.drawString(contextString, (int) x, (int) y);
 				}
-				
-				// Final string
-				String contextString = "" + curContext + prevString;
-				
-				// Position of the textbox
-				double x = (line.getX1() + line.getX2()) / 2;
-				double y = (line.getY1() + line.getY2()) / 2;
-				
-				// TEXT POSITION ADJUSTMENT
-				// Horizontal Line
-				if (line.getY1() == line.getY2()) {
-					x -= (contextString.length() / 2) * TEXT_OFFSET;
-					y -= 10;
-				} 
-				// Vertical line
-				// No need for text adjustment as the text box must have been in the middle of the line
-				else if (line.getX1() == line.getX2()) {
-					x += 10; 
-				}
-				
-				// Set font properties
-				g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 14));
-				
-				// Draw the textbox
-				g.drawString(contextString, (int) x, (int) y);
-				
+			}
+			else {
 				// Draw title
+				//setBackground(Color.BLACK);
 				g.setFont(new Font(g.getFont().getFontName(), Font.PLAIN, 30));
-				g.drawString("COTS Diagram Generator", CANVAS_WIDTH / 2 - 150, 50);
+				g.drawString("COTS Diagram Generator", TITLE_CANVAS_WIDTH / 2 - TITLE_OFFSET, 50);
 			}
 		}
 	}
@@ -200,49 +233,79 @@ public class DrawLine extends JFrame {
 	
 	// Get the x or y position of the leftmost, rightmost, topmost, or bottommost point
 	// Purpose: readjusting the position of the whole diagram
-	public double getLeftMostPoint () {
-		double result = 0.0;
+	private int getLeftMostPoint () {
+		int result = 0;
 		for (COTSLine l: this.lines) {
 			if (l.getX1() < result) {
-				result = l.getX1();
+				result = (int) l.getX1();
 			}
 		}
 		
 		return result;
 	}
 	
-	public double getRightMostPoint () {
-		double result = 0.0;
+	private int getRightMostPoint () {
+		int result = 0;
 		for (COTSLine l: this.lines) {
 			if (l.getX2() > result) {
-				result = l.getX2();
+				result = (int) l.getX2();
 			}
 		}
 		
 		return result;
 	}
 	
-	public double getTopMostPoint () {
-		double result = 0.0;
+	private int getTopMostPoint () {
+		int result = Toolkit.getDefaultToolkit().getScreenSize().height;
 		for (COTSLine l: this.lines) {
 			if (l.getY2() < result) {
-				result = l.getY2();
+				result = (int) l.getY2();
 			}
 		}
 		
 		return result;
 	}
 	
-	public double getBottomMostPoint () {
-		double result = 0.0;
+	private int getBottomMostPoint () {
+		int result = 0;
 		for (COTSLine l: this.lines) {
 			if (l.getY1() > result) {
-				result = l.getY1();
+				result = (int) l.getY1();
 			}
 		}
 		
 		return result;
 	}
+	
+	// Calculate how many pixels the translation needs to put the diagram in the middle horizontally
+	private int diagramHorizontalTranslation () {
+		int translation = 0;
+		int diagramWidth = this.getRightMostPoint() - this.getLeftMostPoint();
+		
+		translation = (DIAGRAM_CANVAS_WIDTH / 2) - (diagramWidth / 2);
+		
+		// Prevent minus value
+		if (translation < DIAGRAM_LIMIT_LEFT) {
+			return DIAGRAM_LIMIT_LEFT;
+		} else {
+			return translation;
+		}
+	}
+	
+	// Calculate how many pixels the translation needs to put the diagram in the middle vertically
+	private int diagramVerticalTranslation () {
+		int translation = 0;
+		int diagramHeight = this.getBottomMostPoint() - this.getTopMostPoint();
+		
+		translation = (DIAGRAM_CANVAS_HEIGHT / 2) - (diagramHeight / 2);
+		if (this.getTopMostPoint() - translation < DIAGRAM_LIMIT_TOP) {
+			return (this.getTopMostPoint() - DIAGRAM_LIMIT_TOP);
+		} else {
+			return translation;
+		}
+	}
+	
+	
 	/*
 	 * Initialization of drawing
 	 * Call initDraw() IF AND ONLY IF all lines to be drawn has been added to the attribute lines
@@ -252,21 +315,25 @@ public class DrawLine extends JFrame {
 	
 	public void initDraw () {
 		// Create a new canvas object
-		canvas = new DrawCanvas();
+		titleCanvas = new DrawCanvas(true);
+		diagramCanvas = new DrawCanvas(false);
 				
-		// Set the canvas size -> DrawCanvas extends JPanel + JPanel extends JComponent -> JComponent has the setPreferredSize method
-		canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+		// Set the canvas size
+		titleCanvas.setPreferredSize(new Dimension(TITLE_CANVAS_WIDTH, TITLE_CANVAS_HEIGHT));
+		diagramCanvas.setPreferredSize(new Dimension(DIAGRAM_CANVAS_WIDTH, DIAGRAM_CANVAS_HEIGHT));
 				
 		// getContentPane -> get the Container where components are usually added to
 		Container cp = getContentPane();
+		cp.setLayout(new BorderLayout());
 				
 		// Adding the drawing canvas to the container
-		cp.add(canvas);
+		cp.add(titleCanvas, BorderLayout.PAGE_START);
+		cp.add(diagramCanvas, BorderLayout.CENTER);
 				
 		//Some Frame properties
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.pack();
+		this.setLocationRelativeTo(null);
 		this.setTitle("COTS Diagram");
-		this.setVisible(true);
+		this.setVisible(true);	
 	}
 }

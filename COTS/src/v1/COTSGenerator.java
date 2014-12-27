@@ -1,9 +1,6 @@
 package v1;
 
-import java.util.Scanner;
-
 import javax.swing.*;
-
 import java.awt.*;
 
 /**
@@ -14,13 +11,13 @@ import java.awt.*;
  *
  */
 
+@SuppressWarnings("serial")
 public class COTSGenerator extends JFrame
 {
 	private JTextArea tracker;
 	
 	//Using a standard Java icon
-    private Icon optionIcon = UIManager.getIcon("FileView.computerIcon");
-    
+    //private Icon optionIcon = UIManager.getIcon("FileView.computerIcon");
     
 	public static void main (String[] args)
 	{

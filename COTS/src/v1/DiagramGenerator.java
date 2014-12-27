@@ -5,8 +5,8 @@ import java.awt.geom.Point2D;
 public class DiagramGenerator 
 {
 	// OFFSET X and Y will be used to the determined how long the line should be
-	public static final double OFFSET_X = 150;
-	public static final double OFFSET_Y = -150;
+	public static final double POINTER_OFFSET_X = 150;
+	public static final double POINTER_OFFSET_Y = -150;
 	
 	// coordPointer is the point where the line should start and the length is determined by the OFFSET constants
 	private Point2D.Double coordPointer;
@@ -16,7 +16,7 @@ public class DiagramGenerator
 	
 	public DiagramGenerator ()
 	{
-		this.coordPointer = new Point2D.Double(OFFSET_X, (DrawLine.CANVAS_HEIGHT / 2)  - OFFSET_Y);
+		this.coordPointer = new Point2D.Double(0.0, DrawLine.DIAGRAM_CANVAS_HEIGHT);
 		this.lineDrawer = new DrawLine();
 	}
 	
