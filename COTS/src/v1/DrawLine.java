@@ -72,6 +72,7 @@ public class DrawLine extends JFrame {
 	
 				//Draw all lines
 				for (COTSLine line: lines) {
+					System.out.println(line.getDashed());
 					if (line.getDashed()) {
 						// draw dashed line
 						double lengthX = Math.abs(line.getX2() - line.getX1());
