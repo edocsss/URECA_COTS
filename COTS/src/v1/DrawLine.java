@@ -162,7 +162,8 @@ public class DrawLine extends JFrame {
 					// Vertical line
 					// No need for text adjustment as the text box must have been in the middle of the line
 					else if (line.getX1() == line.getX2()) {
-						x += 10; 
+						x += 10;
+						y += TEXT_OFFSET;
 					}
 					
 					// Set font properties

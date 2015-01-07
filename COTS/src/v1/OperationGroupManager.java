@@ -134,7 +134,7 @@ public final class OperationGroupManager
 				numLines = og.getDepth();
 				
 				// For the purpose of labeling for the other site
-				IDList = o.getOtherSiteID(IDList);
+				IDList = og.getOtherSiteID(IDList);
 				Collections.sort(IDList);
 			}
 			else if (o.getSecondOperand() > 0)
@@ -217,7 +217,7 @@ public final class OperationGroupManager
 				numLines = og.getDepth();
 				
 				// For the purpose of labeling for the other site
-				IDList = o.getOtherSiteID(IDList);
+				IDList = og.getOtherSiteID(IDList);
 				Collections.sort(IDList);
 			}
 			// To add the ID of the other site to the IDList
