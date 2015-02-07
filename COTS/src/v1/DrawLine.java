@@ -72,7 +72,7 @@ public class DrawLine extends JFrame {
 	
 				//Draw all lines
 				for (COTSLine line: lines) {
-					System.out.println(line.getDashed());
+					//System.out.println(line.getDashed());
 					if (line.getDashed()) {
 						// draw dashed line
 						double lengthX = Math.abs(line.getX2() - line.getX1());
@@ -221,13 +221,13 @@ public class DrawLine extends JFrame {
 	private void setLineContext (COTSLine l) {
 		if (this.lines.size() == 0) return;
 		for (COTSLine line: this.lines) {
-			
 			if (line.getP2().equals(l.getP1())) {				
 				for (int i: line.getPrevContext()) {
 					l.addPrevContext(i);
-					System.out.println(i); // Debugging purpose
+					//System.out.println(i); // Debugging purpose
 				}
 				
+				// Including that line current context itself
 				l.addPrevContext(line.getCurContext());
 			}
 		}
