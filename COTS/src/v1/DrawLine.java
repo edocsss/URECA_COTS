@@ -1,6 +1,8 @@
 package v1;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -33,6 +35,11 @@ public class DrawLine extends JFrame {
 	// ArrayList / Vector to get all the Line2D object to be drawn -> will be drawn by the Overridden paintComponent()
 	private ArrayList<COTSLine> lines;
 	
+	// Button to re-do the whole process
+	private JButton resetButton;
+	private final int RESET_BUTTON_WIDTH = 100;
+	private final int RESET_BUTTON_HEIGHT = 50;
+	
 	// Constructor
 	public DrawLine () {
 		// Instantiating the ArrayList
@@ -40,7 +47,22 @@ public class DrawLine extends JFrame {
 		
 		// Maximizing the window
 		this.setExtendedState(Frame.MAXIMIZED_BOTH);
-		this.setSize(new Dimension(MINIMIZED_CANVAS_WIDTH, MINIMIZED_CANVAS_HEIGHT));
+		this.setSize(new Dimension(MINIMIZED_CANVAS_WIDTH, MINIMIZED_CANVAS_HEIGHT + 120));
+		
+		// Instantiating reset button
+		this.resetButton = new JButton("Reset");
+		this.resetButton.setSize(RESET_BUTTON_WIDTH, RESET_BUTTON_HEIGHT);
+		this.resetButton.setLocation(TITLE_CANVAS_WIDTH / 2 - RESET_BUTTON_WIDTH / 2, TITLE_CANVAS_HEIGHT + DIAGRAM_CANVAS_HEIGHT - RESET_BUTTON_HEIGHT - 30);
+		this.add(this.resetButton);
+		
+		// Adding event listener to the button
+		this.resetButton.addActionListener(new ActionListener () {
+			public void actionPerformed (ActionEvent e) {
+				// RESET
+				closeFrame();
+				COTSGenerator.COTSInit();
+			}
+		});
 	}
 	
 	/*
@@ -337,5 +359,9 @@ public class DrawLine extends JFrame {
 		this.setLocationRelativeTo(null);
 		this.setTitle("COTS Diagram");
 		this.setVisible(true);	
+	}
+	
+	private void closeFrame () {
+		super.dispose();
 	}
 }
