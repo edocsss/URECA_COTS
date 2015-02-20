@@ -33,23 +33,25 @@ public class Parser
 		OperationGroup op;
 		
 		// Index of character in the Expression string
-		int i = 0;
+		int i = 0, strLen = this.expression.length();
 		
 		// The result
 		ArrayList<OperationGroup> processedExpression = new ArrayList<OperationGroup> ();
 		
 		try {
-			// As long as the bracketStack is not empty (meaning that not all operations inside the brackets have been touched, 
-			// continue parsing
-			// The condition i == 0 is only to skip the first iteration as the bracketStack is always empty initially (the 
-			// opening bracket has not been pushed inside)
-			while (!bracketStack.isEmpty() || i == 0)
+			// Parse all the string, regardless of the expStack.
+			while (i < strLen)
 			{
 				check = this.expression.charAt(i);			
 				//result = "";
 				
+				// Ignore if space is encountered
+				if (Character.isWhitespace(check)) {
+					i++;
+					continue;
+				}
 				// If "(" -> push to stack
-				if (check == '(')
+				else if (check == '(')
 				{
 					bracketStack.push(check);
 				}
@@ -173,6 +175,7 @@ public class Parser
 						// 2. Group 2
 					}
 				}
+				
 				
 				before = check;
 				i++;
