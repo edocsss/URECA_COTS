@@ -44,14 +44,14 @@ public class COTSGenerator extends JFrame
         //Input dialog with a text field
         String input =  JOptionPane.showInputDialog(this, "Please note that current version of COTS Diagram Generator has a format for a given expression:\n"
         		+ "1. For each 2 operands, it has to be bounded by opening and closing parenthesis\n"
-        		+ "2. Do not put any whitespace in between\n"
+        		+ "2. Whitespaces between operands are fine\n"
         		+ "Example:\n"
-        		+ "((1->2)||3)\n"
-        		+ "((1->2)||(3->4))\n"
-        		+ "(((1->2)->3)->4)\n"
-        		+ "((1->((2->3)||(4->5)))->6)\n"
+        		+ "((1 -> 2) || 3)\n"
+        		+ "((1 -> 2) || (3 -> 4))\n"
+        		+ "(((1 -> 2 ) -> 3 ) -> 4)\n"
+        		+ "((1 -> ((2 -> 3) || (4 -> 5))) -> 6)\n"
         		+ "\n",
-        		"((1->((2->3)||(4->5)))->6)");
+        		"((1 -> ((2 -> 3) || (4 -> 5))) -> 6)");
         
         TrackResponse(input);
     }
