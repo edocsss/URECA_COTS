@@ -53,6 +53,7 @@ public class COTSGenerator extends JFrame
         		+ "\n",
         		"((1->((2->3)||(4->5)))->6)");
         
+        System.out.println(input);
         TrackResponse(input);
     }
     
@@ -64,6 +65,7 @@ public class COTSGenerator extends JFrame
         if (response == null)
         {
             //tracker.append("You closed the dialog without any input\n");
+        	System.exit(0);
         }
         else
         {
