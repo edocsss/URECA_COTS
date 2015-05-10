@@ -134,6 +134,7 @@ public final class OperationGroupManager
 				numLines = og.getDepth();
 				
 				// For the purpose of labeling for the other site
+				// This list is only used in the later part when we draw for the other site's lines!
 				IDList = og.getOtherSiteID(IDList);
 				Collections.sort(IDList);
 			}
