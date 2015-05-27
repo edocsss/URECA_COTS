@@ -25,7 +25,7 @@ public class DiagramGenerator
 		// Add the Lines2D.Double object directly to the DrawLine object
 		OperationGroup og = OperationGroupManager.getBiggestOperationGroup();
 		og.setPrevConcurrency(false);
-		OperationGroupManager.generateDiagram(og, this.lineDrawer, this.coordPointer, 1, null, false);
+		og.generateDiagram(this.lineDrawer, this.coordPointer, 1, null, false);
 	}
 	
 	public void generateDiagram ()
